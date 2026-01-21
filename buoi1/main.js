@@ -73,9 +73,12 @@ for (let i in products) {
   );
 }
 //cau 10
-console.log("Câu 10 - Danh sách sản phẩm đang bán và true:");
+console.log("Câu 10 - Danh sách sản phẩm đang bán và còn hàng:");
 let availableProductNames = products
-  .filter((product) => product.quantity > 0)
-  .map((product) => product.name);
+  .filter((product) => product.isAvailable === true)
+  .map(
+    (product) =>
+      `Tên sản phẩm:${product.name} - số lượng hàn tồn:${product.quantity} - Trạng thái: ${product.isAvailable ? "Còn hàng" : "Hết hàng"}`,
+  );
 
 console.log(availableProductNames);
