@@ -1,0 +1,79 @@
+{
+  "$schema": "./node_modules/json-server/schema.json",
+  "posts": [
+    {
+      "id": "1",
+      "title": "a title",
+      "views": 100,
+      "isDeleted": false
+    },
+    {
+      "id": "2",
+      "title": "another title",
+      "views": 200,
+      "isDeleted": false
+    },
+    {
+      "id": "3",
+      "title": "another titlee",
+      "views": 300,
+      "isDeleted": false
+    },
+    {
+      "id": "4",
+      "title": "haha",
+      "views": 700,
+      "isDeleted": false
+    },
+    {
+      "id": "5",
+      "title": "hohio",
+      "views": "900",
+      "isDeleted": false
+    },
+    {
+      "title": "Ngao",
+      "views": "3-2",
+      "id": "6",
+      "isDeleted": false
+    },
+    {
+      "title": "Mu",
+      "views": "1000",
+      "id": "7",
+      "isDeleted": false
+    },
+    {
+      "title": "ghê taaa",
+      "views": "555",
+      "id": "8",
+      "isDeleted": false
+    },
+    {
+      "id": "10",
+      "title": "rùi xong",
+      "views": "999",
+      "isDeleted": false
+    },
+    {
+      "title": "đây rùi",
+      "views": "900",
+      "id": "9"
+    }
+  ],
+  "comments": [
+    {
+      "id": "1",
+      "text": "bình luận bài id 1",
+      "postId": "1"
+    },
+    {
+      "id": "3",
+      "text": "hay",
+      "postId": "8"
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

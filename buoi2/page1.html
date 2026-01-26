@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 30px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+      input[type="text"] {
+        padding: 8px;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      input[type="submit"] {
+        padding: 8px 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover {
+        background-color: #45a049;
+      }
+      .form-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-section">
+      <h2>Thêm/Sửa Bài</h2>
+      <p>Để trống ID để tạo bài mới (muốn sửa bài thì nhập ID bài cần sửa)</p>
+      <label>ID:</label
+      ><input
+        type="text"
+        id="id_txt"
+        placeholder="Để trống để tạo bài mới" /><br /><br />
+      <label>Tiêu đề:</label
+      ><input
+        type="text"
+        id="title_txt"
+        placeholder="Nhập tiêu đề bài" /><br /><br />
+      <label>Lượt xem:</label
+      ><input
+        type="text"
+        id="views_txt"
+        placeholder="Nhập số lượt xem" /><br /><br />
+      <input type="submit" value="Lưu" onclick="Save()" />
+    </div>
+
+    <div>
+      <h2>Bài viết</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Lượt xem</th>
+            <th colspan="2">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="comments-section"></div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
