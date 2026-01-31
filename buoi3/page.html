@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Products</title>
+    <link rel="stylesheet" href="page.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Product Dashboard</h1>
+
+      <!-- Search Section -->
+      <div class="search-section">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Tìm kiếm sản phẩm..."
+          class="search-input" />
+      </div>
+
+      <!-- Items Per Page Section -->
+      <div class="pagination-section">
+        <label for="itemsPerPage">Items per page:</label>
+        <select id="itemsPerPage" class="items-select">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+
+      <!-- Products Table -->
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Hình ảnh</th>
+            <th class="sortable" data-column="title">
+              Mục <span class="sort-icon">⬍</span>
+            </th>
+            <th class="sortable" data-column="price">
+              Giá <span class="sort-icon">⬍</span>
+            </th>
+            <th>Mô tả</th>
+            <th>Mục sản phẩm</th>
+          </tr>
+        </thead>
+        <tbody id="productsBody">
+          <tr>
+            <td colspan="5" class="loading">Loading products...</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls">
+        <button id="prevBtn" class="pagination-btn">Trước</button>
+        <span id="pageInfo" class="page-info">Trang 1</span>
+        <button id="nextBtn" class="pagination-btn">Sau</button>
+      </div>
+    </div>
+
+    <script src="file.js"></script>
+  </body>
+</html>
