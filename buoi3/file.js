@@ -1,306 +1,203 @@
-// Dashboard API Class
 class Dashboard {
   constructor() {
     this.apiUrl = "https://api.escuelajs.co/api/v1/products";
     this.allProducts = [];
     this.filteredProducts = [];
+
     this.currentPage = 1;
     this.itemsPerPage = 5;
+
     this.sortColumn = null;
-    this.sortOrder = "asc"; // asc or desc
+    this.sortOrder = "asc";
   }
 
-  // Get all products from API
-  async getAll() {
+  // ================= FETCH =================
+  async loadProducts() {
     try {
-      const response = await fetch(this.apiUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "cors",
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      this.allProducts = await response.json();
+      const res = await fetch(this.apiUrl);
+      if (!res.ok) throw new Error("API error");
+
+      this.allProducts = await res.json();
       this.filteredProducts = [...this.allProducts];
-      this.currentPage = 1;
-      console.log("Products loaded:", this.allProducts.length);
-      console.log("Sample product:", this.allProducts[0]);
-      return this.allProducts;
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      return [];
+
+      this.render();
+    } catch (err) {
+      document.getElementById("productsBody").innerHTML =
+        `<tr><td colspan="6">Không tải được dữ liệu</td></tr>`;
+      console.error(err);
     }
   }
 
-  // Filter products by title
-  filterByTitle(searchTerm) {
-    const term = searchTerm.toLowerCase();
-    this.filteredProducts = this.allProducts.filter((product) =>
-      product.title.toLowerCase().includes(term),
+  // ================= SEARCH =================
+  search(keyword) {
+    const k = keyword.toLowerCase();
+    this.filteredProducts = this.allProducts.filter((p) =>
+      p.title.toLowerCase().includes(k),
     );
     this.currentPage = 1;
     this.render();
   }
 
-  // Sort products
-  sortBy(column, order = null) {
-    if (this.sortColumn === column && order === null) {
-      // Toggle sort order if clicking same column
+  // ================= SORT =================
+  sort(column) {
+    if (this.sortColumn === column) {
       this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
     } else {
-      // New column selected
       this.sortColumn = column;
-      this.sortOrder = order || "asc";
+      this.sortOrder = "asc";
     }
 
     this.filteredProducts.sort((a, b) => {
-      let aVal = a[column];
-      let bVal = b[column];
+      let x = a[column];
+      let y = b[column];
 
-      if (column === "price") {
-        aVal = parseFloat(aVal) || 0;
-        bVal = parseFloat(bVal) || 0;
-      } else if (column === "title") {
-        aVal = aVal.toLowerCase();
-        bVal = bVal.toLowerCase();
+      if (column === "price" || column === "id") {
+        x = Number(x);
+        y = Number(y);
+      } else {
+        x = (x || "").toLowerCase();
+        y = (y || "").toLowerCase();
       }
 
-      if (aVal < bVal) return this.sortOrder === "asc" ? -1 : 1;
-      if (aVal > bVal) return this.sortOrder === "asc" ? 1 : -1;
+      if (x < y) return this.sortOrder === "asc" ? -1 : 1;
+      if (x > y) return this.sortOrder === "asc" ? 1 : -1;
       return 0;
     });
 
     this.currentPage = 1;
-    this.updateSortIcons();
     this.render();
   }
 
-  // Update sort icons in table headers
-  updateSortIcons() {
-    document.querySelectorAll(".sortable .sort-icon").forEach((icon) => {
-      icon.textContent = "⬍";
-    });
-
-    const activeHeader = document.querySelector(
-      `.sortable[data-column="${this.sortColumn}"] .sort-icon`,
-    );
-    if (activeHeader) {
-      activeHeader.textContent = this.sortOrder === "asc" ? "▲" : "▼";
-    }
+  // ================= PAGINATION =================
+  setItemsPerPage(n) {
+    this.itemsPerPage = Number(n);
+    this.currentPage = 1;
+    this.render();
   }
 
-  // Get paginated products for current page
-  getPaginatedProducts() {
-    const startIdx = (this.currentPage - 1) * this.itemsPerPage;
-    const endIdx = startIdx + this.itemsPerPage;
-    return this.filteredProducts.slice(startIdx, endIdx);
-  }
-
-  // Get total pages
   getTotalPages() {
-    return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
+    return Math.ceil(this.filteredProducts.length / this.itemsPerPage) || 1;
   }
 
-  // Render table with products
-  render() {
-    const tbody = document.getElementById("productsBody");
-    const products = this.getPaginatedProducts();
-
-    if (products.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="5" class="loading">No products found.</td></tr>';
-      this.updatePaginationControls();
-      return;
-    }
-
-    tbody.innerHTML = products
-      .map((product, index) => {
-        const rowClass = (this.currentPage - 1) * this.itemsPerPage + index;
-        const isEvenRow = rowClass % 2 === 0;
-        const imageUrl = product.images?.[0] || "";
-        const productId = product.id;
-
-        // Render row immediately with loading state
-        setTimeout(() => {
-          if (imageUrl && document.getElementById(`img-${productId}`)) {
-            this.convertJpegToPng(imageUrl).then((pngUrl) => {
-              const imgElement = document.getElementById(`img-${productId}`);
-              if (imgElement) {
-                imgElement.src = pngUrl;
-              }
-            });
-          }
-        }, 0);
-
-        return `
-        <tr class="product-row ${isEvenRow ? "even" : "odd"}">
-          <td class="image-cell">
-            ${
-              imageUrl
-                ? `<div class="image-container">
-              <img class="image-placeholder" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Crect fill='%23f0f0f0' width='140' height='140'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='12' fill='%23999'%3ELoading...%3C/text%3E%3C/svg%3E" alt="${product.title}" id="img-${productId}" crossorigin="anonymous" />
-            </div>`
-                : `<div class="placeholder-image">${product.title.substring(0, 20)}</div>`
-            }
-          </td>
-          <td class="title-cell">${this.truncate(product.title, 50)}</td>
-          <td class="price-cell">$${parseFloat(product.price || 0).toFixed(2)}</td>
-          <td class="description-cell">
-            <div class="description-content">${this.truncate(product.description || "N/A", 100)}</div>
-          </td>
-          <td class="category-cell">${product.category?.name || "N/A"}</td>
-        </tr>
-        `;
-      })
-      .join("");
-
-    this.updatePaginationControls();
+  getCurrentData() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredProducts.slice(start, start + this.itemsPerPage);
   }
 
-  // Truncate text to specified length
-  truncate(text, maxLength) {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + "...";
-    }
-    return text;
-  }
-
-  // Update pagination controls
-  updatePaginationControls() {
-    const totalPages = this.getTotalPages();
-    const pageInfo = document.getElementById("pageInfo");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-
-    pageInfo.textContent = `Page ${this.currentPage} of ${totalPages}`;
-    prevBtn.disabled = this.currentPage === 1;
-    nextBtn.disabled = this.currentPage === totalPages;
-  }
-
-  // Go to next page
-  nextPage() {
-    const totalPages = this.getTotalPages();
-    if (this.currentPage < totalPages) {
+  next() {
+    if (this.currentPage < this.getTotalPages()) {
       this.currentPage++;
       this.render();
     }
   }
 
-  // Go to previous page
-  prevPage() {
+  prev() {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.render();
     }
   }
 
-  // Convert JPEG to PNG data URL
-  async convertJpegToPng(jpegUrl) {
-    return new Promise((resolve) => {
-      try {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
+  // ================= RENDER =================
+  render() {
+    const tbody = document.getElementById("productsBody");
+    const data = this.getCurrentData();
 
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
-          const pngDataUrl = canvas.toDataURL("image/png");
-          resolve(pngDataUrl);
-        };
-
-        img.onerror = () => {
-          console.log("Direct load failed, trying with proxy...");
-          // Thử với proxy nếu trực tiếp thất bại
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(jpegUrl)}`;
-          img.src = proxyUrl;
-        };
-
-        img.src = jpegUrl;
-      } catch (error) {
-        console.error("Error converting image:", error);
-        resolve(jpegUrl);
-      }
-    });
-  }
-
-  // Convert and download image as PNG
-  downloadAsPNG(imgId, productTitle) {
-    const img = document.getElementById(imgId);
-    if (!img) {
-      alert("Ảnh không tìm thấy!");
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6">Không có sản phẩm</td></tr>`;
+      this.updatePageInfo();
       return;
     }
 
-    // Chờ ảnh load xong
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
+    tbody.innerHTML = data
+      .map((p, i) => {
+        const rowClass = i % 2 === 0 ? "even" : "odd";
 
-      // Convert canvas sang blob PNG
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${productTitle.replace(/\s+/g, "-")}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, "image/png");
-    };
+        // render toàn bộ ảnh của product
+        const imagesHtml =
+          p.images && p.images.length
+            ? p.images
+                .map(
+                  (url) => `
+            <img src="${url}"
+                 class="thumb"
+                 loading="lazy"
+                 referrerpolicy="no-referrer"
+                 onerror="this.style.display='none'">
+          `,
+                )
+                .join("")
+            : `<div class="placeholder-image">No image</div>`;
 
-    // Nếu ảnh đã load
-    if (img.complete) {
-      img.onload();
-    }
+        return `
+        <tr class="${rowClass}">
+          <td>${p.id}</td>
+
+          <td class="image-cell">
+            <div class="image-multi">
+              ${imagesHtml}
+            </div>
+          </td>
+
+          <td class="title-cell">${this.cut(p.title, 40)}</td>
+          <td class="price-cell">$${p.price}</td>
+
+          <td class="description-cell">
+            <div class="description-content">
+              ${this.cut(p.description || "", 120)}
+            </div>
+          </td>
+
+          <td class="category-cell">
+            ${p.category?.name || ""}
+          </td>
+        </tr>
+      `;
+      })
+      .join("");
+
+    this.updatePageInfo();
+  }
+
+  cut(text, n) {
+    if (!text) return "";
+    return text.length > n ? text.slice(0, n) + "..." : text;
+  }
+
+  updatePageInfo() {
+    document.getElementById("pageInfo").textContent =
+      `Trang ${this.currentPage} / ${this.getTotalPages()}`;
+
+    document.getElementById("prevBtn").disabled = this.currentPage === 1;
+
+    document.getElementById("nextBtn").disabled =
+      this.currentPage === this.getTotalPages();
   }
 }
 
-// Initialize dashboard when DOM is loaded
-let dashboard;
+// ================= INIT =================
+const app = new Dashboard();
 
-document.addEventListener("DOMContentLoaded", async () => {
-  dashboard = new Dashboard();
+document.addEventListener("DOMContentLoaded", () => {
+  app.loadProducts();
 
-  // Load products on page load
-  await dashboard.getAll();
-  dashboard.render();
+  document
+    .getElementById("searchInput")
+    .addEventListener("input", (e) => app.search(e.target.value));
 
-  // Search functionality
-  const searchInput = document.getElementById("searchInput");
-  searchInput.addEventListener("input", (e) => {
-    dashboard.filterByTitle(e.target.value);
-  });
+  document
+    .getElementById("itemsPerPage")
+    .addEventListener("change", (e) => app.setItemsPerPage(e.target.value));
 
-  // Items per page selection
-  const itemsPerPageSelect = document.getElementById("itemsPerPage");
-  itemsPerPageSelect.addEventListener("change", (e) => {
-    dashboard.setItemsPerPage(e.target.value);
-  });
+  document
+    .getElementById("prevBtn")
+    .addEventListener("click", () => app.prev());
 
-  // Pagination buttons
-  document.getElementById("prevBtn").addEventListener("click", () => {
-    dashboard.prevPage();
-  });
+  document
+    .getElementById("nextBtn")
+    .addEventListener("click", () => app.next());
 
-  document.getElementById("nextBtn").addEventListener("click", () => {
-    dashboard.nextPage();
-  });
-
-  // Sort by column headers
-  document.querySelectorAll(".sortable").forEach((header) => {
-    header.addEventListener("click", () => {
-      const column = header.getAttribute("data-column");
-      dashboard.sortBy(column);
-    });
+  document.querySelectorAll(".sortable").forEach((th) => {
+    th.addEventListener("click", () => app.sort(th.dataset.column));
   });
 });
