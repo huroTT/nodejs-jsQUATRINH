@@ -5,200 +5,197 @@
 }
 
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
   padding: 20px;
 }
 
-/* ================= CONTAINER ================= */
+/* ===== CONTAINER ===== */
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 28px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+  background: white;
+  padding: 24px;
+  border-radius: 6px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
-  border-bottom: 3px solid #667eea;
-  padding-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-/* ================= SEARCH ================= */
+/* ===== SEARCH + PAGE SIZE ===== */
 
 .search-input {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #ddd;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
-
-.search-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-/* ================= ITEMS PER PAGE ================= */
 
 .pagination-section {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .items-select {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 2px solid #ddd;
+  padding: 6px 10px;
 }
 
-/* ================= TABLE ================= */
+/* ===== TABLE ===== */
 
 .products-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* QUAN TRỌNG — không vỡ layout */
+  border: 1px solid #ccc;
 }
 
+/* HEADER */
+
 .products-table thead {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #333;
   color: white;
 }
 
 .products-table th {
-  padding: 14px;
+  padding: 12px;
+  border: 1px solid #555;
   text-align: left;
-  font-size: 0.9em;
+  font-weight: 600;
 }
+
+/* BODY */
 
 .products-table td {
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border: 1px solid #ccc;
   vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-/* zebra rows */
+/* ===== ZEBRA ROW — đúng ảnh 2 ===== */
+
+.products-table tbody tr:nth-child(odd) {
+  background: #ffffff;
+  color: black;
+}
+
 .products-table tbody tr:nth-child(even) {
-  background: #f8f9ff;
+  background: #000000;
+  color: white;
 }
 
-.products-table tbody tr:hover {
-  background: #f0e6ff;
+/* đảm bảo link/text trong row đen vẫn trắng */
+
+.products-table tbody tr:nth-child(even) td {
+  color: white;
 }
 
-/* ================= SORT ================= */
+/* ===== IMAGE COLUMN ===== */
+
+.image-cell {
+  width: 280px;
+}
+
+/* nhiều ảnh nằm ngang */
+
+.image-list {
+  display: flex;
+  gap: 10px;
+}
+
+/* ảnh nhỏ như ảnh mẫu */
+
+.image-list img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: white;
+  padding: 3px;
+}
+
+/* ===== TITLE ===== */
+
+.title-cell {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* ===== PRICE ===== */
+
+.price-cell {
+  font-weight: bold;
+}
+
+/* ===== SORT ===== */
 
 .sortable {
   cursor: pointer;
 }
 
 .sortable:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: #444;
 }
 
-/* ================= IMAGE CELL ================= */
-
-.image-cell {
-  width: 140px;
-  text-align: center;
-}
-
-.image-cell img {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-  padding: 6px;
-}
-
-/* QUAN TRỌNG — tránh ảnh phá layout */
-img {
-  max-width: 100%;
-  display: block;
-}
-
-/* ================= TITLE ================= */
-
-.title-cell {
-  font-weight: 600;
-  color: #333;
-}
-
-/* ================= PRICE ================= */
-
-.price-cell {
-  color: #667eea;
-  font-weight: 700;
-}
-
-/* ================= DESCRIPTION ================= */
+/* ===== DESCRIPTION — HIỂN THỊ TRỰC TIẾP (KHÔNG HOVER TOOLTIP) ===== */
 
 .description-cell {
-  max-width: 260px;
+  max-width: 400px;
+  white-space: normal;
+  line-height: 1.4;
 }
 
-/* không dùng absolute hover nữa → không phá table */
-.description-cell span {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* tắt hoàn toàn tooltip cũ nếu còn */
+
+.description-text {
+  display: block !important;
+  position: static !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
-/* ================= CATEGORY ================= */
-
-.category-cell {
-  font-weight: 600;
-  color: #764ba2;
-}
-
-/* ================= PAGINATION ================= */
+/* ===== PAGINATION ===== */
 
 .pagination-controls {
   display: flex;
   justify-content: center;
-  gap: 18px;
-  margin-top: 20px;
+  gap: 16px;
+  margin-top: 18px;
 }
 
 .pagination-btn {
-  padding: 9px 16px;
-  border-radius: 6px;
+  padding: 8px 16px;
+  background: black;
+  color: white;
   border: none;
   cursor: pointer;
-  color: white;
-  font-weight: 600;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
 }
 
 .pagination-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .page-info {
-  font-weight: 600;
+  font-weight: bold;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ===== RESPONSIVE ===== */
 
-@media (max-width: 768px) {
-  .products-table {
-    font-size: 0.85em;
+@media (max-width: 900px) {
+  .image-list img {
+    width: 60px;
+    height: 60px;
   }
 
-  .image-cell img {
-    width: 70px;
-    height: 70px;
+  .products-table {
+    font-size: 13px;
   }
 }

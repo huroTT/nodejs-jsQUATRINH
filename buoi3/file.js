@@ -1,6 +1,7 @@
 class Dashboard {
   constructor() {
     this.apiUrl = "https://api.escuelajs.co/api/v1/products";
+
     this.allProducts = [];
     this.filteredProducts = [];
 
@@ -11,7 +12,7 @@ class Dashboard {
     this.sortOrder = "asc";
   }
 
-  // ================= FETCH =================
+  // ================= FETCH ALL =================
   async loadProducts() {
     try {
       const res = await fetch(this.apiUrl);
@@ -31,9 +32,11 @@ class Dashboard {
   // ================= SEARCH =================
   search(keyword) {
     const k = keyword.toLowerCase();
+
     this.filteredProducts = this.allProducts.filter((p) =>
       p.title.toLowerCase().includes(k),
     );
+
     this.currentPage = 1;
     this.render();
   }
@@ -103,49 +106,48 @@ class Dashboard {
     const tbody = document.getElementById("productsBody");
     const data = this.getCurrentData();
 
-    if (data.length === 0) {
+    if (!data.length) {
       tbody.innerHTML = `<tr><td colspan="6">Không có sản phẩm</td></tr>`;
       this.updatePageInfo();
       return;
     }
 
     tbody.innerHTML = data
-      .map((p, i) => {
-        const rowClass = i % 2 === 0 ? "even" : "odd";
-
-        // render toàn bộ ảnh của product
-        const imagesHtml =
-          p.images && p.images.length
-            ? p.images
-                .map(
-                  (url) => `
-            <img src="${url}"
-                 class="thumb"
-                 loading="lazy"
-                 referrerpolicy="no-referrer"
-                 onerror="this.style.display='none'">
-          `,
-                )
-                .join("")
-            : `<div class="placeholder-image">No image</div>`;
+      .map((p) => {
+        // render tối đa 3 ảnh giống layout mẫu
+        const imagesHtml = (p.images || [])
+          .slice(0, 3)
+          .map(
+            (url) => `
+          <img src="${url}"
+               class="thumb"
+               loading="lazy"
+               referrerpolicy="no-referrer"
+               onerror="this.style.display='none'">
+        `,
+          )
+          .join("");
 
         return `
-        <tr class="${rowClass}">
+        <tr>
           <td>${p.id}</td>
 
           <td class="image-cell">
-            <div class="image-multi">
+            <div class="image-list">
               ${imagesHtml}
             </div>
           </td>
 
-          <td class="title-cell">${this.cut(p.title, 40)}</td>
-          <td class="price-cell">$${p.price}</td>
+          <td class="title-cell">
+            ${p.title}
+          </td>
+
+          <td class="price-cell">
+            $${p.price}
+          </td>
 
           <td class="description-cell">
-            <div class="description-content">
-              ${this.cut(p.description || "", 120)}
-            </div>
+            ${p.description}
           </td>
 
           <td class="category-cell">
@@ -159,11 +161,7 @@ class Dashboard {
     this.updatePageInfo();
   }
 
-  cut(text, n) {
-    if (!text) return "";
-    return text.length > n ? text.slice(0, n) + "..." : text;
-  }
-
+  // ================= PAGE INFO =================
   updatePageInfo() {
     document.getElementById("pageInfo").textContent =
       `Trang ${this.currentPage} / ${this.getTotalPages()}`;
